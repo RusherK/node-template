@@ -3279,6 +3279,7 @@ dependencies = [
  "pallet-balances",
  "pallet-grandpa",
  "pallet-nicks",
+ "pallet-poe",
  "pallet-randomness-collective-flip",
  "pallet-sudo",
  "pallet-template",

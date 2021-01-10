@@ -41,8 +41,12 @@ pub use frame_support::{
 /// Import the template pallet.
 pub use pallet_template;
 
+pub use pallet_poe;
+
 /// An index to a block.
 pub type BlockNumber = u32;
+
+
 
 /// Alias to 512-bit hash when used in the context of a transaction signature on the chain.
 pub type Signature = MultiSignature;
@@ -109,6 +113,15 @@ pub const SLOT_DURATION: u64 = MILLISECS_PER_BLOCK;
 pub const MINUTES: BlockNumber = 60_000 / (MILLISECS_PER_BLOCK as BlockNumber);
 pub const HOURS: BlockNumber = MINUTES * 60;
 pub const DAYS: BlockNumber = HOURS * 24;
+
+
+//add this line
+mod substratekitties;
+
+impl sudo::Trait for Runtime{
+	type Event = Event;
+	type Proposal = Call;
+}
 
 /// The version information used to identify this runtime when compiled natively.
 #[cfg(feature = "std")]
@@ -261,7 +274,9 @@ parameter_types! {
     pub const NickReservationFee: u128 = 100;
     pub const MinNickLength: usize = 8;
     // Maximum bounds on storage are important to secure your chain.
-    pub const MaxNickLength: usize = 32;
+	pub const MaxNickLength: usize = 32;
+	pub const MaxClaimLength: u32 = 256;
+	
 }
 
 impl pallet_nicks::Trait for Runtime {
@@ -299,6 +314,14 @@ impl pallet_template::Trait for Runtime {
 	type Event = Event;
 }
 
+
+
+/// Configure the template pallet in pallets/template.
+impl pallet_poe::Trait for Runtime {
+	type MaxClaimLength = MaxClaimLength;
+	type Event = Event;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
 	pub enum Runtime where
@@ -317,6 +340,7 @@ construct_runtime!(
 		// Include the custom logic from the template pallet in the runtime.
 		TemplateModule: pallet_template::{Module, Call, Storage, Event<T>},
 
+		PoeModule: pallet_poe::{Module, Call, Storage, Event<T>},
 		/* --snip-- */
 
         /*** Add This Line ***/
@@ -356,6 +380,9 @@ pub type Executive = frame_executive::Executive<
 	Runtime,
 	AllModules,
 >;
+
+//kitties
+pub type BlockNumber = u64
 
 impl_runtime_apis! {
 	impl sp_api::Core<Block> for Runtime {
