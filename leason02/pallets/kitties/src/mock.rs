@@ -1,6 +1,6 @@
 use crate::{Module, Trait};
 use sp_core::H256;
-use frame_support::{impl_outer_origin, parameter_types, weights::Weight,
+use frame_support::{impl_outer_origin, impl_outer_event, parameter_types, weights::Weight,
 	traits::{OnFinalize, OnInitialize}
 };
 use sp_runtime::{
@@ -34,7 +34,8 @@ impl system::Trait for Test {
 	type AccountId = u64;
 	type Lookup = IdentityLookup<Self::AccountId>;
 	type Header = Header;
-	type Event = ();
+	type Event = TestEvent;
+	// type Event = ();
 	type BlockHashCount = BlockHashCount;
 	type MaximumBlockWeight = MaximumBlockWeight;
 	type DbWeight = ();
@@ -49,13 +50,29 @@ impl system::Trait for Test {
 	type OnNewAccount = ();
 	type OnKilledAccount = ();
 	type SystemWeightInfo = ();
+
+}
+mod kitties_event {
+	pub use crate::Event;
+}
+
+
+// balances 报错
+impl_outer_event! {
+	pub enum TestEvent for Test {
+		system<T>,
+		balances<T>,
+		kitties_event<T>,
+	}
 }
 
 type Randomness = pallet_randomness_collective_flip::Module<Test>;
 
 impl Trait for Test {
-	type Event = ();
+	type Event = TestEvent;
 	type Randomness = Randomness;
+	type KittyIndex = u32;
+	type Currency = balances::Module<Self>;
 }
 
 pub type Kitties = Module<Test>;

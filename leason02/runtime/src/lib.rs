@@ -45,6 +45,8 @@ pub use pallet_template;
 
 pub use pallet_kitties;
 
+// pub type KittyIndex = u32;
+
 /// An index to a block.
 pub type BlockNumber = u32;
 
@@ -194,6 +196,7 @@ impl frame_system::Trait for Runtime {
 	type AccountData = pallet_balances::AccountData<Balance>;
 	/// Weight information for the extrinsics of this pallet.
 	type SystemWeightInfo = ();
+
 }
 
 impl pallet_aura::Trait for Runtime {
@@ -273,6 +276,11 @@ impl pallet_template::Trait for Runtime {
 impl pallet_kitties::Trait for Runtime {
 	type Event = Event;
 	type Randomness = RandomnessCollectiveFlip;
+
+	//Homework point 2
+	type KittyIndex = u32;
+
+
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
