@@ -280,6 +280,8 @@ impl pallet_kitties::Trait for Runtime {
 	//Homework point 2
 	type KittyIndex = u32;
 
+	type Currency = Balances;
+
 
 }
 

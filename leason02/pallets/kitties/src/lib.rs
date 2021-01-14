@@ -3,7 +3,7 @@
 use codec::{Decode, Encode};
 use frame_support::{
     decl_error, decl_event, decl_module, decl_storage, ensure, sp_runtime, StorageMap, StorageValue,
-    Parameter, traits::{Randomness, Currency, ReservableCurrency}
+    Parameter, traits::{Get, Randomness, Currency, ReservableCurrency}
 };
 use frame_system::{ensure_signed};
 use sp_io::hashing::blake2_128;
@@ -29,10 +29,10 @@ pub trait Trait: frame_system::Trait {
     type Randomness: Randomness<Self::Hash>;
     type KittyIndex: Parameter + AtLeast32BitUnsigned + Bounded + Default + Copy;
     type Currency: ReservableCurrency<Self::AccountId>;
+    type StakingMoney: Get<BalanceOf<Self>>;
 }
 
 type BalanceOf<T> = <<T as Trait>::Currency as Currency<<T as frame_system::Trait>::AccountId>>::Balance;
-const StakingMoney: u64 = 10;
 
 decl_storage! {
     trait Store for Module<T: Trait> as Kitties {
@@ -50,7 +50,8 @@ decl_error! {
         KittiesCountOverFlow,
         InvalidKittyId,
         RequireDifferentParent,
-        NotKittyOwner
+        NotKittyOwner,
+        MoreMoneyRequire,
     }
 }
 
@@ -85,7 +86,7 @@ decl_module! {
 
             let kitty = Kitty(dna);
 
-            T::Currency::reserve(&sender, StakingMoney)?;
+            T::Currency::reserve(&sender, T::StakingMoney::get()).map_err(|_| Error::<T>::MoreMoneyRequire )?;
 
             //作业 3
             <OwnedKittiesCount<T>>::insert(&sender, owner_all_kitties_count);
@@ -105,10 +106,12 @@ decl_module! {
 
             // 2.sender是否拥有Kitty？
             // let owner = Self::kitty_owner::get(kitty_id); Self写法怎么写？
-            let owner = <KittyOwners<T>>::get(kitty_id);
-            //解析Option获得kitty的主人
 
-            ensure!(owner == sender, Error::<T>::NotKittyOwner);
+            // let owner = <KittyOwners<T>>::get(kitty_id);
+            // //解析Option获得kitty的主人
+            // ensure!(owner == sender, Error::<T>::NotKittyOwner);
+
+            ensure!(Self::kitty_owner(&kitty_id) == Some(sender.clone()), Error::<T>::NotKittyOwner);
 
             <KittyOwners<T>>::insert(kitty_id, to.clone());
             Self::deposit_event(RawEvent::Transferred(sender, to, kitty_id))

@@ -1,5 +1,5 @@
 
-use crate::{Error, mock::*, Event};
+use crate::{mock::*, Event};
 use frame_support::{assert_ok};
 use frame_system::{EventRecord, Phase};
 
