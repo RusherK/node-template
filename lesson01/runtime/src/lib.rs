@@ -114,15 +114,6 @@ pub const MINUTES: BlockNumber = 60_000 / (MILLISECS_PER_BLOCK as BlockNumber);
 pub const HOURS: BlockNumber = MINUTES * 60;
 pub const DAYS: BlockNumber = HOURS * 24;
 
-
-//add this line
-mod substratekitties;
-
-impl sudo::Trait for Runtime{
-	type Event = Event;
-	type Proposal = Call;
-}
-
 /// The version information used to identify this runtime when compiled natively.
 #[cfg(feature = "std")]
 pub fn native_version() -> NativeVersion {
@@ -275,6 +266,8 @@ parameter_types! {
     pub const MinNickLength: usize = 8;
     // Maximum bounds on storage are important to secure your chain.
 	pub const MaxNickLength: usize = 32;
+
+	//新增runtime变量
 	pub const MaxClaimLength: u32 = 256;
 	
 }
@@ -314,10 +307,9 @@ impl pallet_template::Trait for Runtime {
 	type Event = Event;
 }
 
-
-
 /// Configure the template pallet in pallets/template.
 impl pallet_poe::Trait for Runtime {
+	//继承变量，对应pallet的config trait
 	type MaxClaimLength = MaxClaimLength;
 	type Event = Event;
 }
@@ -380,9 +372,6 @@ pub type Executive = frame_executive::Executive<
 	Runtime,
 	AllModules,
 >;
-
-//kitties
-pub type BlockNumber = u64
 
 impl_runtime_apis! {
 	impl sp_api::Core<Block> for Runtime {
