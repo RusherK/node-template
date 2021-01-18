@@ -1,8 +1,16 @@
-# Kitties Course
+# Substrate Node Template
 
-* [Substrate Node README](node/README.md)
-* [Front-end README](frontend/README.md)
+![image](https://github.com/RusherK/node-template/tree/master/lesson03/lesson03.png)
 
-To make polkadot-JS app connects to the Substrate node, add 
-[`frontend/src/config/types.json`](frontend/src/config/types.json)
-JSON structure in app `Settings` > `Developer`.
+
+``
+make build
+``
+
+``
+make run
+``
+
+``
+cargo test -p pallet-poe
+``
