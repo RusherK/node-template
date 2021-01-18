@@ -1,6 +1,6 @@
 # Substrate Node Template
 
-![image](https://github.com/RusherK/node-template/tree/master/lesson03/lesson03.png)
+![image](https://github.com/RusherK/node-template/blob/master/lesson03/lesson03.png)
 
 
 ``
