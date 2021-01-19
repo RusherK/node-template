@@ -1,9 +1,11 @@
 import React from 'react';
-import { Button, Card, Grid, Message, Modal, Form, Label } from 'semantic-ui-react';
+import { Card, Grid, Message, Modal, Form, Label } from 'semantic-ui-react';
 
 import KittyAvatar from './KittyAvatar';
 import { TxButton } from './substrate-lib/components';
 
+import { Button, Row, Col, Divider, Tag } from "antd";
+import "antd/dist/antd.css";
 // --- About Modal ---
 
 const TransferModal = props => {
@@ -13,6 +15,8 @@ const TransferModal = props => {
 
   const formChange = key => (ev, el) => {
     /* TODO: 加代码 */
+
+    setFormValue({ [key]: el.value });
   };
 
   const confirmAndClose = (unsub) => {
@@ -24,8 +28,8 @@ const TransferModal = props => {
     trigger={<Button basic color='blue'>转让</Button>}>
     <Modal.Header>毛孩转让</Modal.Header>
     <Modal.Content><Form>
-      <Form.Input fluid label='毛孩 ID' readOnly value={kitty.id}/>
-      <Form.Input fluid label='转让对象' placeholder='对方地址' onChange={formChange('target')}/>
+      <Form.Input fluid label='毛孩 ID' readOnly value={kitty.id} />
+      <Form.Input fluid label='转让对象' placeholder='对方地址' onChange={formChange('target')} />
     </Form></Modal.Content>
     <Modal.Actions>
       <Button basic color='grey' onClick={() => setOpen(false)}>取消</Button>
@@ -53,14 +57,56 @@ const KittyCard = props => {
     <TransferModal kitty={kitty} accountPair={accountPair} setStatus={setStatus}/> - 来作转让的弹出层
     ```
   */
-  return null;
+
+
+  const { dna } = props
+  //把hash字符串转为纯数字，用来获取猫咪特征
+  let pureNum = dna.replace(/[^0-9]/ig, "");
+
+  return (
+    <div><KittyAvatar dna={pureNum} />
+    </div>
+  );
 };
 
 const KittyCards = props => {
   const { kitties, accountPair, setStatus } = props;
-
+  console.log()
+  const kittiesStyle = { padding: "20px", marginBottom: "20px", borderRadius: "8px", boxShadow: "0px 0px 10px #ddd" };
+  const textCenter = { textAlign: "center" };
+  const inlineText = { wordBreak: "break-all", color: "#999" }
+  const tagStyle = { position: "absolute", right: "-30px", top: "-10px", borderRadius: "3px" }
   /* TODO: 加代码。这里会枚举所有的 `KittyCard` */
-  return null;
+  return (
+    <Row justify="space-between">
+      {
+        kitties.map((item, idx) => {
+          return (
+            <Col className="gutter-row" style={kittiesStyle} span={7} key={idx}>
+              {
+                accountPair && accountPair.address == item.owner ?
+                  <Tag style={tagStyle} color="#2db7f5">我的</Tag>
+                  : null
+              }
+              <KittyCard dna={item.dna} ></KittyCard>
+              <Divider />
+
+              <div>ID号：{idx}</div>
+              <div>基因：</div>
+              <div style={inlineText}>{item.dna}</div>
+              <div>主人：</div>
+              <div style={inlineText}>{item.owner}</div>
+
+              <Divider />
+              <div style={textCenter}>
+                <TransferModal kitty={item} accountPair={accountPair} setStatus={setStatus} />
+              </div>
+            </Col>
+          )
+        })
+      }
+    </Row>
+  );
 };
 
 export default KittyCards;

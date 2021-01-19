@@ -12,5 +12,5 @@ make run
 ``
 
 ``
-cargo test -p pallet-poe
+cargo test -p pallet-kitties
 ``
