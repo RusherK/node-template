@@ -58,20 +58,19 @@ const KittyCard = props => {
     ```
   */
 
-
   const { dna } = props
   //把hash字符串转为纯数字，用来获取猫咪特征
   let pureNum = dna.replace(/[^0-9]/ig, "");
 
   return (
-    <div><KittyAvatar dna={pureNum} />
+    <div>
+      <KittyAvatar dna={pureNum} />
     </div>
   );
 };
 
 const KittyCards = props => {
   const { kitties, accountPair, setStatus } = props;
-  console.log()
   const kittiesStyle = { padding: "20px", marginBottom: "20px", borderRadius: "8px", boxShadow: "0px 0px 10px #ddd" };
   const textCenter = { textAlign: "center" };
   const inlineText = { wordBreak: "break-all", color: "#999" }
