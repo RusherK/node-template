@@ -17,56 +17,76 @@ export default function Kitties(props) {
   const [kitties, setKitties] = useState([]);
   const [status, setStatus] = useState('');
 
-  const fetchKittyCnt = async () => {
+  const fetchKittyCnt = () => {
     /* TODO: 加代码，从 substrate 端读取数据过来 */
-    const unsub = await api.query.kittiesModule.kittiesCount(amount => {
+    api.query.kittiesModule.kittiesCount(amount => {
       //获取猫咪总数/ID
       let kittyCount = amount.toJSON();
       setKittyCnt(kittyCount);
 
+      fetchKittiesDna(kittyCount);
+      fetchKittiesOwner(kittyCount)
+
     })
   };
 
-
-  const fetchKitties = async () => {
+  const fetchKittiesDna = (kCnt) => {
     /* TODO: 加代码，从 substrate 端读取数据过来 */
+    //获取猫咪们的dna
+    //Q: 猫咪会死吗？ KittyIndex是否按顺序递增
+    api.query.kittiesModule.kitties.multi([...Array(kCnt).keys()], (data) => {
+      let tempData = [];
+      data.map(row => {
+        if (row.isNone) {
+          tempData.push('猫不存在');
+        } else {
+          //Option 转字符串
+          //hash.toJSON() 或 hash.toHuman() 
+          //value.toJSON() 或 value.toHuman()
+          let kittyDna = row.value.toHuman();
 
-    const unsub = await api.queryMuilt([
-      [api.query.kittiesModule.kitties, kittyCnt],
-      [api.query.kittiesModule.kittyOwners, kittyCnt],
-    ], (dnaOption, ownerOption) => {
-      //Option 转字符串
-      //hash.toJSON() 或 hash.toHuman() 
-      //value.toJSON() 或 value.toHuman()
-      //dna arr
-      let dnaData = [];
-      dnaOption.map(item => {
-        let kittyDna = item.value.toHuman();
-        dnaData.push(kittyDna);
+          tempData.push(kittyDna);
+        }
       })
-      // setKittyDNAs(dnaData);
-
-      //owner arr
-      let ownerData = [];
-      ownerOption.map(item => {
-        let ownerDna = item.value.toHuman();
-        ownerData.push(ownerDna);
-      })
-      // setKittyOwners(ownerData);
-
-      let kittiesAllInfo = [];
-
-      for (let idx = 0; idx < kittyCnt; idx++) {
-        kittiesAllInfo.push({
-          id: idx,
-          dna: dnaData[idx],
-          owner: ownerData[idx]
-        })
-      }
-
-      setKitties(kittiesAllInfo);
-
+      setKittyDNAs(tempData);
     })
+  }
+
+  const fetchKittiesOwner = (kCnt) => {
+    //获取猫咪的主人
+
+    api.query.kittiesModule.kittyOwners.multi([...Array(kCnt).keys()], (data) => {
+      let tempData = [];
+      data.map(row => {
+        if (row.isNone) {
+          tempData.push('猫不存在');
+        } else {
+          //Option 转字符串
+          //hash.toJSON() 或 hash.toHuman() 
+          //value.toJSON() 或 value.toHuman()
+          let kittyOwner = row.value.toHuman();
+
+          tempData.push(kittyOwner);
+        }
+      })
+      setKittyOwners(tempData);
+    })
+  }
+
+  const fetchKitties = () => {
+    /* TODO: 加代码，从 substrate 端读取数据过来 */
+    //combine
+
+    let kittiesAllInfo = [];
+    for (let idx = 0; idx < kittyCnt; idx++) {
+      kittiesAllInfo.push({
+        id: idx,
+        dna: kittyDNAs[idx],
+        owner: kittyOwners[idx]
+      })
+    }
+
+    setKitties(kittiesAllInfo);
   }
 
   const populateKitties = () => {
@@ -74,7 +94,7 @@ export default function Kitties(props) {
   };
 
   useEffect(fetchKittyCnt, [api, keyring]);
-  useEffect(fetchKitties, [api, kittyCnt]);
+  useEffect(fetchKitties, [api, kittyDNAs, kittyOwners]);
   useEffect(populateKitties, [kittyDNAs, kittyOwners]);
 
   return <Grid.Column width={16}>
