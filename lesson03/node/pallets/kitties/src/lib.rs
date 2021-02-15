@@ -30,7 +30,7 @@ type OwnedKittiesList<T> = LinkedList<OwnedKitties<T>, <T as system::Trait>::Acc
 decl_storage! {
 	trait Store for Module<T: Trait> as Kitties {
 		/// Stores all the kitties, key is the kitty id / index
-		pub Kitties get(fn kitties): map hasher(blake2_128_concat) T::KittyIndex => Option<Kitty>;
+		pub Kitties get(fn kitties): map hasher(blake2_128_concat) T::KittyIndex => KittyIndex<Kitty>;
 
 		/// Stores the total number of kitties. i.e. the next kitty index
 		pub KittiesCount get(fn kitties_count): T::KittyIndex;
